@@ -21,53 +21,63 @@ function lexer(str) {
     EOF,
   };
 
+  function skipWhitespace() {
+    while (cursor < str.length && /\s/.test(str[cursor])) {
+      cursor++;
+    }
+  }
+
   function readToken() {
+    skipWhitespace();
+
     while (cursor < str.length) {
       let char = str[cursor];
 
-      if (char === "+") {
-        cursor++;
-        return Token.OperatorAdd;
-      } else if (char === "-") {
-        cursor++;
-        return Token.OperatorSub;
-      } else if (char === "*") {
-        cursor++;
-        return Token.OperatorMul;
-      } else if (char === "/") {
-        cursor++;
-        return Token.OperatorDiv;
-      } else if (char === "(") {
-        cursor++;
-        return Token.BracketOpen;
-      } else if (char === ")") {
-        cursor++;
-        return Token.BracketClose;
-      } else if (/[0-9]/.test(char)) {
-        let numStr = "";
-        while (cursor < str.length && /[0-9]/.test(str[cursor])) {
-          numStr += str[cursor];
+      switch (char) {
+        case "+":
           cursor++;
-        }
-        const numValue = parseFloat(numStr); // Zapamiętaj parseFloat Converts a string to a floating-point number
-        return Token.Number + ":" + numValue;
-      } else if (/\s/.test(char)) {
-        cursor++; // to skip whitespaces
-      } else {
-        throw new Error("Unexpected character: " + char);
+          return Token.OperatorAdd;
+        case "-":
+          cursor++;
+          return Token.OperatorSub;
+        case "*":
+          cursor++;
+          return Token.OperatorMul;
+        case "/":
+          cursor++;
+          return Token.OperatorDiv;
+        case "(":
+          cursor++;
+          return Token.BracketOpen;
+        case ")":
+          cursor++;
+          return Token.BracketClose;
+        default:
+          if (/[0-9]/.test(char)) {
+            let numStr = "";
+            while (cursor < str.length && /[0-9]/.test(str[cursor])) {
+              numStr += str[cursor];
+              cursor++;
+            }
+            const numValue = parseFloat(numStr);
+            return Token.Number + ":" + numValue;
+          } else {
+            throw new Error("Unexpected character: " + char);
+          }
       }
     }
 
     return Token.EOF;
   }
 
-  let tokens = []; // to jest nasz storage i w nim zapisujemy nasze token make sens
+  let tokens = [];
   let token = readToken();
   while (token !== Token.EOF) {
     tokens.push(token);
     token = readToken();
   }
-  tokens.push(token); // eof nie wyswietlal sie przez to ze uzyles go w warunku while
+  tokens.push(token);
+
   return tokens;
 }
 
@@ -78,3 +88,5 @@ for (const token of tokens) {
   console.log(token);
 }
 console.log("finish");
+
+
