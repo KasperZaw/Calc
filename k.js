@@ -1,5 +1,6 @@
 function lexer(str) {
   let cursor = 0;
+  let tokenStack = [];
 
   const OperatorAdd = "OPERATOR_ADD";
   const OperatorSub = "OPERATOR_SUB";
@@ -20,16 +21,24 @@ function lexer(str) {
     Number,
     EOF,
   };
+   
+  function eatWhiteSpaces() { //alternatywa z else if funkcia bedzie umieszczona na gorze readToken
 
-  function skipWhitespace() {
-    while (cursor < str.length && /\s/.test(str[cursor])) {
-      cursor++;
+  }
+
+  function putToken(token) {
+    tokenStack.push(token);
+  }
+
+  function getToken() {
+    if (tokenStack.length > 0) {
+      return tokenStack.pop();
+    } else {
+      return readToken();
     }
   }
 
   function readToken() {
-    skipWhitespace();
-
     while (cursor < str.length) {
       let char = str[cursor];
 
@@ -61,6 +70,8 @@ function lexer(str) {
             }
             const numValue = parseFloat(numStr);
             return Token.Number + ":" + numValue;
+          } else if (/\s/.test(char)) {
+            cursor++; // Skip whitespace characters
           } else {
             throw new Error("Unexpected character: " + char);
           }
@@ -71,16 +82,17 @@ function lexer(str) {
   }
 
   let tokens = [];
-  let token = readToken();
+  let token = getToken();
   while (token !== Token.EOF) {
     tokens.push(token);
-    token = readToken();
+    token = getToken();
   }
   tokens.push(token);
 
   return tokens;
 }
 
+// Example usage:
 const input = "122 * 22";
 console.log("start");
 const tokens = lexer(input);
@@ -88,5 +100,3 @@ for (const token of tokens) {
   console.log(token);
 }
 console.log("finish");
-
-
