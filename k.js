@@ -64,22 +64,22 @@ function lexer(str) {
       switch (char) {
         case "+":
           cursor++;
-          return Token.OperatorAdd;
+          return { type: Token.OperatorAdd, value: char };
         case "-":
           cursor++;
-          return Token.OperatorSub;
+          return { type: Token.OperatorSub, value: char };
         case "*":
           cursor++;
-          return Token.OperatorMul;
+          return { type: Token.OperatorMul, value: char };
         case "/":
           cursor++;
-          return Token.OperatorDiv;
+          return { type: Token.OperatorDiv, value: char };
         case "(":
           cursor++;
-          return Token.BracketOpen;
+          return { type: Token.BracketOpen, value: char };
         case ")":
           cursor++;
-          return Token.BracketClose;
+          return { type: Token.BracketClose, value: char };
         default:
           if (/[0-9]/.test(char)) {
             let numStr = "";
@@ -119,3 +119,10 @@ for (const token of tokens) {
   console.log(token);
 }
 console.log("finish");
+
+
+// while(cursor < str.length) { //hm
+//   if(chart === /\s+/) {
+
+//   }
+// }
