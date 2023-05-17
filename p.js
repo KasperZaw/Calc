@@ -3,7 +3,7 @@ import lexer from "./l.js";
 function parser(input) {
   const tokens = lexer(input);
   let currentToken = 0;
-  // kolejnosc wykonywania
+
   function expressionParse() {
     let node = additionSubtractionParse();
     while (
@@ -19,7 +19,7 @@ function parser(input) {
         type: operator.type,
         operator: operator.value,
         left: node,
-        right: rightNode, // syntax tree (AST) poczytaj więcej.
+        right: rightNode,
       };
     }
 
@@ -97,29 +97,42 @@ function parser(input) {
     }
   }
 
-  const parsedExpression = expressionParse();
-  const result = evaluate(parsedExpression);
-  console.log(result);
-}
-
-function evaluate(node) {
-  switch (node.type) {
-    case "NUMBER":
-      return parseFloat(node.value);
-    case "OPERATOR_ADD":
-      return evaluate(node.left) + evaluate(node.right);
-    case "OPERATOR_SUB":
-      return evaluate(node.left) - evaluate(node.right);
-    case "OPERATOR_MUL":
-      return evaluate(node.left) * evaluate(node.right);
-    case "OPERATOR_DIV":
-      return evaluate(node.left) / evaluate(node.right);
-    default:
-      throw new Error("Invalid node type: " + node.type);
+  function printAST(node) {
+    if (node.type === "NUMBER") {
+      return {
+        type: "NUMBER",
+        value: node.value
+      };
+    } else if (
+      node.type === "OPERATOR_ADD" ||
+      node.type === "OPERATOR_SUB" ||
+      node.type === "OPERATOR_MUL" ||
+      node.type === "OPERATOR_DIV"
+    ) {
+      return {
+        type: node.type,
+        operator: node.operator,
+        left: printAST(node.left),
+        right: printAST(node.right)
+      };
+    }
   }
+  const parsedExpression = expressionParse();
+  console.log("start");
+  console.log(JSON.stringify(printAST(parsedExpression), null, 2));
+  console.log("finish");
 }
 const input = "100 + 5 * 5";
-console.log("start");
 parser(input);
-console.log("finish");
+
+// grammar.ne
+
+
+// npm install nearley
+// expression -> _ additionSubtraction* _
+// additionSubtraction -> _ (OPERATOR_ADD | OPERATOR_SUB) _ multiplicationDivision
+// multiplicationDivision -> _ (OPERATOR_MUL | OPERATOR_DIV) _ num
+// num -> NUMBER | BRACKET_OPEN _ expression _ BRACKET_CLOSE
+
+// _ -> " "*
 
